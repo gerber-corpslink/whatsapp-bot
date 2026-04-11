@@ -1,37 +1,24 @@
 const express = require('express');
-const app = express();
+const { twiml: { MessagingResponse } } = require('twilio');
 
-// MUY IMPORTANTE para Twilio
+const app = express();
 app.use(express.urlencoded({ extended: true }));
 
 app.post('/webhook', (req, res) => {
-    console.log('Mensaje recibido:', req.body);
+  console.log('Mensaje recibido:', req.body);
 
-    const incomingMsg = (req.body.Body || '').trim().toLowerCase();
+  const twiml = new MessagingResponse();
+  twiml.message('🔥 BOT ACTIVO - respuesta correcta');
 
-    let response = '';
-
-    if (incomingMsg.includes('hola')) {
-        response = 'Hola 👋 Soy tu asistente. ¿En qué puedo ayudarte?';
-    } else {
-        response = 'Recibí tu mensaje: ' + incomingMsg;
-    }
-
-    res.set('Content-Type', 'text/xml');
-    res.send(`
-        <Response>
-            <Message>${response}</Message>
-        </Response>
-    `);
+  res.writeHead(200, { 'Content-Type': 'text/xml' });
+  res.end(twiml.toString());
 });
 
-app.get('/', (req, res) => {
-    res.send('Servidor activo 🚀');
+app.get('/', (_req, res) => {
+  res.send('Servidor activo');
 });
 
-// 🔥 Render usa su propio puerto
-const PORT = process.env.PORT;
-
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log('Servidor corriendo en puerto', PORT);
+  console.log(`Servidor corriendo en puerto ${PORT}`);
 });
