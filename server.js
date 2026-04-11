@@ -1,33 +1,37 @@
 const express = require('express');
-const bodyParser = require('body-parser');
-
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+
+// MUY IMPORTANTE para Twilio
+app.use(express.urlencoded({ extended: true }));
 
 app.post('/webhook', (req, res) => {
-  const incomingMsg = (req.body.Body || '').trim().toLowerCase();
+    console.log('Mensaje recibido:', req.body);
 
-  let response = '';
+    const incomingMsg = (req.body.Body || '').trim().toLowerCase();
 
-  if (incomingMsg.includes('hola')) {
-    response = 'Hola 👋 Soy tu asistente. ¿En qué puedo ayudarte?';
-  } else {
-    response = 'Recibí tu mensaje: ' + (req.body.Body || '');
-  }
+    let response = '';
 
-  res.set('Content-Type', 'text/xml');
-  res.send(`
-    <Response>
-      <Message>${response}</Message>
-    </Response>
-  `);
+    if (incomingMsg.includes('hola')) {
+        response = 'Hola 👋 Soy tu asistente. ¿En qué puedo ayudarte?';
+    } else {
+        response = 'Recibí tu mensaje: ' + incomingMsg;
+    }
+
+    res.set('Content-Type', 'text/xml');
+    res.send(`
+        <Response>
+            <Message>${response}</Message>
+        </Response>
+    `);
 });
 
 app.get('/', (req, res) => {
-  res.send('Servidor activo 🚀');
+    res.send('Servidor activo 🚀');
 });
 
-const PORT = process.env.PORT || 3000;
+// 🔥 Render usa su propio puerto
+const PORT = process.env.PORT;
+
 app.listen(PORT, () => {
-  console.log('Servidor corriendo en puerto ' + PORT);
+    console.log('Servidor corriendo en puerto', PORT);
 });
